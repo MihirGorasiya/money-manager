@@ -1,3 +1,4 @@
 # money_manager
 
-A new Flutter project.
+This is money manager mobile app.
+It helps to keep track of all transactions and help to quick check available savings/balance.
