@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:money_manager/constants/app_constants.dart';
+import 'package:money_manager/utils/database_manager.dart';
 
 class DayTransaction extends StatelessWidget {
   const DayTransaction({
@@ -50,7 +52,7 @@ class DayTransaction extends StatelessWidget {
                 width: screenSize.width * 0.17,
                 child: const Text(
                   '\$504.51',
-                  style: TextStyle(color: Colors.blue),
+                  style: TextStyle(color: AppConstants.blueColor),
                 ),
               ),
               SizedBox(
@@ -58,7 +60,7 @@ class DayTransaction extends StatelessWidget {
                 child: const Text(
                   '\$35.91',
                   textAlign: TextAlign.right,
-                  style: TextStyle(color: Colors.red),
+                  style: TextStyle(color: AppConstants.redColor),
                 ),
               ),
             ],
@@ -82,7 +84,7 @@ class DayTransaction extends StatelessWidget {
                     width: screenSize.width * 0.20,
                     child: Text(
                       transactions[index]['category'],
-                      style: TextStyle(color: Colors.grey[600]),
+                      style: const TextStyle(color: AppConstants.greyText),
                     ),
                   ),
                   SizedBox(
@@ -93,7 +95,7 @@ class DayTransaction extends StatelessWidget {
                         Text(transactions[index]['description']),
                         Text(
                           transactions[index]['account'],
-                          style: TextStyle(color: Colors.grey[600]),
+                          style: const TextStyle(color: AppConstants.greyText),
                         ),
                       ],
                     ),
@@ -105,8 +107,8 @@ class DayTransaction extends StatelessWidget {
                       textAlign: TextAlign.right,
                       style: TextStyle(
                         color: transactions[index]['amount'] > 0
-                            ? Colors.blue
-                            : Colors.red,
+                            ? AppConstants.blueColor
+                            : AppConstants.redColor,
                       ),
                     ),
                   ),
