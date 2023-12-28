@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:money_manager/constants/app_constants.dart';
-import 'package:money_manager/utils/database_manager.dart';
+import 'package:money_manager/utils/expense.dart';
 
-class DayTransaction extends StatelessWidget {
+class DayTransaction extends StatefulWidget {
   const DayTransaction({
     super.key,
     required this.screenSize,
@@ -13,7 +13,35 @@ class DayTransaction extends StatelessWidget {
 
   final Size screenSize;
   final DateTime transactionDate;
-  final List<Map<String, dynamic>> transactions;
+  final List<Expense> transactions;
+
+  @override
+  State<DayTransaction> createState() => _DayTransactionState();
+}
+
+class _DayTransactionState extends State<DayTransaction> {
+  double spent = 0.0;
+  double earned = 0.0;
+
+  void calculateExpense() {
+    for (Expense e in widget.transactions) {
+      if (e.amount > 0) {
+        setState(() {
+          earned += e.amount;
+        });
+      } else {
+        setState(() {
+          spent += e.amount.abs();
+        });
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    calculateExpense();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,14 +52,15 @@ class DayTransaction extends StatelessWidget {
           child: Divider(thickness: 1),
         ),
         Container(
-          padding: EdgeInsets.symmetric(horizontal: screenSize.width * 0.03),
+          padding:
+              EdgeInsets.symmetric(horizontal: widget.screenSize.width * 0.03),
           child: Row(
             children: [
               SizedBox(
-                width: screenSize.width * 0.60,
+                width: widget.screenSize.width * 0.60,
                 child: Row(
                   children: [
-                    Text(transactionDate.day.toString()),
+                    Text(widget.transactionDate.day.toString()),
                     Container(
                       margin: const EdgeInsets.only(left: 5, right: 3),
                       padding: const EdgeInsets.symmetric(
@@ -41,26 +70,27 @@ class DayTransaction extends StatelessWidget {
                         borderRadius: BorderRadius.circular(5),
                       ),
                       child: Text(DateFormat('EEEE')
-                          .format(transactionDate)
+                          .format(widget.transactionDate)
                           .substring(0, 3)),
                     ),
-                    Text('${transactionDate.month}.${transactionDate.year}'),
+                    Text(
+                        '${widget.transactionDate.month}.${widget.transactionDate.year}'),
                   ],
                 ),
               ),
               SizedBox(
-                width: screenSize.width * 0.17,
-                child: const Text(
-                  '\$504.51',
-                  style: TextStyle(color: AppConstants.blueColor),
+                width: widget.screenSize.width * 0.17,
+                child: Text(
+                  '\$$earned',
+                  style: const TextStyle(color: AppConstants.blueColor),
                 ),
               ),
               SizedBox(
-                width: screenSize.width * 0.17,
-                child: const Text(
-                  '\$35.91',
+                width: widget.screenSize.width * 0.17,
+                child: Text(
+                  '\$$spent',
                   textAlign: TextAlign.right,
-                  style: TextStyle(color: AppConstants.redColor),
+                  style: const TextStyle(color: AppConstants.redColor),
                 ),
               ),
             ],
@@ -73,7 +103,7 @@ class DayTransaction extends StatelessWidget {
         ),
         ListView.builder(
           shrinkWrap: true,
-          itemCount: transactions.length,
+          itemCount: widget.transactions.length,
           itemBuilder: (context, index) {
             return Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -81,32 +111,32 @@ class DayTransaction extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   SizedBox(
-                    width: screenSize.width * 0.20,
+                    width: widget.screenSize.width * 0.20,
                     child: Text(
-                      transactions[index]['category'],
+                      widget.transactions[index].category,
                       style: const TextStyle(color: AppConstants.greyText),
                     ),
                   ),
                   SizedBox(
-                    width: screenSize.width * 0.50,
+                    width: widget.screenSize.width * 0.50,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(transactions[index]['description']),
+                        Text(widget.transactions[index].description),
                         Text(
-                          transactions[index]['account'],
+                          widget.transactions[index].account,
                           style: const TextStyle(color: AppConstants.greyText),
                         ),
                       ],
                     ),
                   ),
                   SizedBox(
-                    width: screenSize.width * 0.20,
+                    width: widget.screenSize.width * 0.20,
                     child: Text(
-                      '\$${transactions[index]['amount']}',
+                      '\$${widget.transactions[index].amount}',
                       textAlign: TextAlign.right,
                       style: TextStyle(
-                        color: transactions[index]['amount'] > 0
+                        color: widget.transactions[index].amount > 0
                             ? AppConstants.blueColor
                             : AppConstants.redColor,
                       ),
