@@ -1,8 +1,11 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:money_manager/constants/app_constants.dart';
+import 'package:money_manager/constants/get_controller.dart';
+import 'package:money_manager/pages/accounts_page.dart';
 import 'package:money_manager/pages/add_expense.dart';
+import 'package:money_manager/pages/expense_page.dart';
+import 'package:money_manager/pages/settings_page.dart';
 import 'package:money_manager/utils/database_manager.dart';
 import 'package:money_manager/utils/expense.dart';
 import 'package:collection/collection.dart';
@@ -17,26 +20,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<Expense>? result;
+  StateController controller = Get.put(StateController());
 
-  late Map<String, List<Expense>> groupped;
-  late List<List<Expense>> grouppedExpenseList = [];
-  void groupedData(List<Expense> expenses) {
-    groupped = groupBy(expenses, (Expense expense) => expense.time);
-
-    setState(() {
-      grouppedExpenseList = groupped.values.toList();
-    });
-  }
-
-  void getAllExpenses() async {
-    result = await DatabaseManager.getAllTransactions();
-    result!.sort((a, b) =>
-        DateTime.tryParse(b.time)!.compareTo(DateTime.tryParse(a.time)!));
-
-    groupedData(result!);
-  }
-
+  //TODO: Move where required
   void addExpense() async {
     Expense trans = Expense(
       time: DateTime(2023, 11, 14, 6, 15, 20).toString(),
@@ -49,6 +35,7 @@ class _HomePageState extends State<HomePage> {
     await DatabaseManager.addData(trans, context);
   }
 
+  //TODO: Move where required
   void deleteExpense() async {
     Expense trans = Expense(
       // time: DateTime(2023, 11, 13, 10, 5, 5).toString(),
@@ -63,20 +50,11 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
-  void initState() {
-    getAllExpenses();
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(
-        //TODO: update month changer
-        title: const Text('Test'),
-      ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: AppConstants.mainThemeColor,
         onPressed: () {
           Navigator.push(
             context,
@@ -89,79 +67,40 @@ class _HomePageState extends State<HomePage> {
           Icons.add_rounded,
         ),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const Text("Daily"),
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 5),
-            child: Divider(thickness: 1),
+      body: Obx(
+        () => controller.bottomSheetSelectedPageIndex.value == 0
+            ? ExpensePage(
+                screenSize: screenSize,
+              )
+            : controller.bottomSheetSelectedPageIndex.value == 1
+                ? const AccountsPage()
+                : const SettingsPage(),
+      ),
+      bottomNavigationBar: Obx(
+        () => BottomNavigationBar(
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.book_rounded),
+              label: 'Expenses',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.account_balance_wallet),
+              label: 'Accounts',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.settings_rounded),
+              label: 'Settings',
+            ),
+          ],
+          currentIndex: controller.bottomSheetSelectedPageIndex.value,
+          selectedIconTheme: IconThemeData(
+            color: AppConstants.mainThemeColor,
           ),
-          const Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text('Income'),
-                  Text(
-                    '0.0',
-                    style: TextStyle(color: AppConstants.blueColor),
-                  ),
-                ],
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text('Expenses'),
-                  Text(
-                    '0.0',
-                    style: TextStyle(color: AppConstants.redColor),
-                  ),
-                ],
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text('Total'),
-                  Text('0.0'),
-                ],
-              ),
-            ],
-          ),
-          Expanded(
-            child: grouppedExpenseList.isNotEmpty
-                ? ListView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: grouppedExpenseList.length,
-                    itemBuilder: (context, index) {
-                      return DayTransaction(
-                        screenSize: screenSize,
-                        transactionDate: grouppedExpenseList[index].isNotEmpty
-                            ? DateTime.parse(
-                                grouppedExpenseList[index].first.time)
-                            : DateTime.now(),
-                        transactions: grouppedExpenseList[index],
-                      );
-                    },
-                  )
-                : const Center(
-                    child: CircularProgressIndicator(),
-                  ),
-          ),
-          // DayTransaction(
-          //   screenSize: screenSize,
-          //   transactionDate: DateTime.parse('2023-12-15'),
-          //   transactions: [
-          //     Expense(
-          //         time: DateTime.parse('2023-12-16').toString(),
-          //         category: 'salary',
-          //         description: 'Tim Horton',
-          //         account: 'RBC credit card',
-          //         amount: 1200)
-          //   ],
-          // ),
-        ],
+          selectedItemColor: AppConstants.mainThemeColor,
+          onTap: (item) {
+            controller.bottomSheetSelectedPageIndex.value = item;
+          },
+        ),
       ),
     );
   }

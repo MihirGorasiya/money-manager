@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:money_manager/constants/get_controller.dart';
 import 'package:money_manager/pages/home_page.dart';
 
 void main() {
@@ -11,8 +13,11 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    
     return MaterialApp(
-      darkTheme: ThemeData.dark(useMaterial3: true),
+      darkTheme: ThemeData.dark(
+        useMaterial3: true,
+      ),
       home: const HomePage(),
     );
   }

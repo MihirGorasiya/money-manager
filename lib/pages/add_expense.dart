@@ -1,5 +1,11 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:money_manager/constants/app_constants.dart';
+import 'package:money_manager/constants/get_controller.dart';
+import 'package:money_manager/widgets/expense_type_selector_tile.dart';
 import 'package:money_manager/widgets/input_field_with_lable.dart';
 
 class AddExpense extends StatefulWidget {
@@ -17,7 +23,21 @@ class _AddExpenseState extends State<AddExpense> {
 
   @override
   Widget build(BuildContext context) {
+    StateController controller = Get.find();
     Size screenSize = MediaQuery.of(context).size;
+
+    ExpenseType expenseType = ExpenseType.expense;
+
+    DateTime selectedDate = DateTime.now();
+    TimeOfDay selectedTime = TimeOfDay.now();
+    Future<void> selectDate() async {
+      final DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: selectedDate,
+        firstDate: DateTime(2010),
+        lastDate: DateTime.now(),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -30,41 +50,41 @@ class _AddExpenseState extends State<AddExpense> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Container(
-                  decoration: BoxDecoration(
-                    color: AppConstants.lightBlackColor,
-                    border: Border.all(color: AppConstants.greyText),
-                    borderRadius: BorderRadius.circular(5),
+                InkWell(
+                  onTap: () {
+                    controller.selectedExpense.value = ExpenseType.income;
+                    log(controller.selectedExpense.value.toString());
+                  },
+                  child: Obx(
+                    () => ExpenseTypeSelectorTile(
+                      selectedType: controller.selectedExpense.value,
+                      myExpenseType: ExpenseType.income,
+                    ),
                   ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 35,
-                    vertical: 8,
-                  ),
-                  child: const Text('Income'),
                 ),
-                Container(
-                  decoration: BoxDecoration(
-                    color: AppConstants.lightBlackColor,
-                    border: Border.all(color: AppConstants.greyText),
-                    borderRadius: BorderRadius.circular(5),
+                InkWell(
+                  onTap: () {
+                    controller.selectedExpense.value = ExpenseType.expense;
+                    log(controller.selectedExpense.value.toString());
+                  },
+                  child: Obx(
+                    () => ExpenseTypeSelectorTile(
+                      selectedType: controller.selectedExpense.value,
+                      myExpenseType: ExpenseType.expense,
+                    ),
                   ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 35,
-                    vertical: 8,
-                  ),
-                  child: const Text('Expense'),
                 ),
-                Container(
-                  decoration: BoxDecoration(
-                    color: AppConstants.lightBlackColor,
-                    border: Border.all(color: AppConstants.greyText),
-                    borderRadius: BorderRadius.circular(5),
+                InkWell(
+                  onTap: () {
+                    controller.selectedExpense.value = ExpenseType.transfer;
+                    log(controller.selectedExpense.value.toString());
+                  },
+                  child: Obx(
+                    () => ExpenseTypeSelectorTile(
+                      selectedType: controller.selectedExpense.value,
+                      myExpenseType: ExpenseType.transfer,
+                    ),
                   ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 35,
-                    vertical: 8,
-                  ),
-                  child: const Text('Transfer'),
                 ),
               ],
             ),
@@ -72,22 +92,40 @@ class _AddExpenseState extends State<AddExpense> {
           // input fields
           InputFieldWithLable(
             screenSize: screenSize,
-            text: 'Date',
+            lable: 'Date',
             padding: true,
-            child: const Text(
-              '12/28/23 (Thu)  10:12',
-              style: TextStyle(fontWeight: FontWeight.w600),
+            child: Row(
+              children: [
+                InkWell(
+                  onTap: () {},
+                  child: Text(
+                    '${selectedDate.month}/${selectedDate.day}/${selectedDate.year} (${DateFormat('EEEE').format(selectedDate).substring(0, 3)})       ',
+                    style: const TextStyle(color: AppConstants.whiteColor),
+                  ),
+                ),
+                InkWell(
+                  onTap: () {},
+                  child: Text(
+                    '${selectedTime.hour}:${selectedTime.minute}',
+                    style: const TextStyle(color: AppConstants.whiteColor),
+                  ),
+                ),
+              ],
             ),
+            // child: const Text(
+            //   '12/28/23 (Thu)  10:12',
+            //   style: TextStyle(fontWeight: FontWeight.w600),
+            // ),
           ),
           InputFieldWithLable(
             screenSize: screenSize,
-            text: 'Account',
+            lable: 'Account',
             padding: false,
             child: TextField(
               controller: accountController,
               scrollPadding: EdgeInsets.zero,
+              cursorColor: AppConstants.mainThemeColor,
               decoration: const InputDecoration(
-                hintText: 'RBC',
                 contentPadding: EdgeInsets.zero,
                 border: InputBorder.none,
                 errorBorder: InputBorder.none,
@@ -100,13 +138,13 @@ class _AddExpenseState extends State<AddExpense> {
           ),
           InputFieldWithLable(
             screenSize: screenSize,
-            text: 'Category',
+            lable: 'Category',
             padding: false,
             child: TextField(
               controller: categoryController,
               scrollPadding: EdgeInsets.zero,
+              cursorColor: AppConstants.mainThemeColor,
               decoration: const InputDecoration(
-                hintText: 'Food',
                 contentPadding: EdgeInsets.zero,
                 border: InputBorder.none,
                 errorBorder: InputBorder.none,
@@ -119,13 +157,13 @@ class _AddExpenseState extends State<AddExpense> {
           ),
           InputFieldWithLable(
             screenSize: screenSize,
-            text: 'Amount',
+            lable: 'Amount',
             padding: false,
             child: TextField(
               controller: amountController,
               scrollPadding: EdgeInsets.zero,
+              cursorColor: AppConstants.mainThemeColor,
               decoration: const InputDecoration(
-                hintText: '2.78',
                 contentPadding: EdgeInsets.zero,
                 border: InputBorder.none,
                 errorBorder: InputBorder.none,
@@ -138,13 +176,13 @@ class _AddExpenseState extends State<AddExpense> {
           ),
           InputFieldWithLable(
             screenSize: screenSize,
-            text: 'Description',
+            lable: 'Description',
             padding: false,
             child: TextField(
               controller: descriptionController,
               scrollPadding: EdgeInsets.zero,
+              cursorColor: AppConstants.mainThemeColor,
               decoration: const InputDecoration(
-                hintText: 'Tim Hortons',
                 contentPadding: EdgeInsets.zero,
                 border: InputBorder.none,
                 errorBorder: InputBorder.none,
@@ -155,19 +193,89 @@ class _AddExpenseState extends State<AddExpense> {
               ),
             ),
           ),
-          //TODO: position this button at the bottom
-          Center(
-            child: Positioned(
-              bottom: 0,
-              child: ElevatedButton(
-                onPressed: () {},
-                child: const Text('submit'),
+          Expanded(
+            child: SizedBox(
+              width: screenSize.width,
+              // TODO: add account selection grid here.
+              child: const Center(
+                child: Text(
+                  'Account Selection will be added Here.',
+                  style: TextStyle(
+                    color: AppConstants.greyText,
+                  ),
+                ),
               ),
             ),
           ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              InkWell(
+                onTap: () {
+                  if (accountController.value.text == '') {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Please Enter Account.'),
+                      ),
+                    );
+                  } else if (categoryController.value.text == '') {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Please Enter category.'),
+                      ),
+                    );
+                  } else if (amountController.value.text == '') {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Please Enter amount.'),
+                      ),
+                    );
+                  } else if (descriptionController.value.text == '') {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Please Enter description.'),
+                      ),
+                    );
+                  } else {
+                    print(accountController.value.text);
+                  }
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: screenSize.width * 0.3,
+                    vertical: 10,
+                  ),
+                  margin: const EdgeInsets.only(bottom: 15),
+                  decoration: BoxDecoration(
+                    color: AppConstants.mainThemeColor,
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: const Text('submit'),
+                ),
+              ),
+              InkWell(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 15,
+                    vertical: 6,
+                  ),
+                  margin: const EdgeInsets.only(bottom: 15),
+                  decoration: BoxDecoration(
+                    color: AppConstants.mainThemeColor,
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: const Icon(Icons.delete_rounded),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }
+
+enum ExpenseType { income, expense, transfer }
