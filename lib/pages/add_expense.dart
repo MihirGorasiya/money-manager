@@ -26,18 +26,18 @@ class _AddExpenseState extends State<AddExpense> {
     StateController controller = Get.find();
     Size screenSize = MediaQuery.of(context).size;
 
-    ExpenseType expenseType = ExpenseType.expense;
+    // ExpenseType expenseType = ExpenseType.expense;
 
     DateTime selectedDate = DateTime.now();
     TimeOfDay selectedTime = TimeOfDay.now();
-    Future<void> selectDate() async {
-      final DateTime? picked = await showDatePicker(
-        context: context,
-        initialDate: selectedDate,
-        firstDate: DateTime(2010),
-        lastDate: DateTime.now(),
-      );
-    }
+    // Future<void> selectDate() async {
+    //   final DateTime? picked = await showDatePicker(
+    //     context: context,
+    //     initialDate: selectedDate,
+    //     firstDate: DateTime(2010),
+    //     lastDate: DateTime.now(),
+    //   );
+    // }
 
     return Scaffold(
       appBar: AppBar(
@@ -237,7 +237,7 @@ class _AddExpenseState extends State<AddExpense> {
                       ),
                     );
                   } else {
-                    print(accountController.value.text);
+                    // print(accountController.value.text);
                   }
                 },
                 child: Container(
