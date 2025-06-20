@@ -8,9 +8,7 @@ import 'package:money_manager/pages/expense_page.dart';
 import 'package:money_manager/pages/settings_page.dart';
 import 'package:money_manager/utils/database_manager.dart';
 import 'package:money_manager/utils/expense.dart';
-import 'package:collection/collection.dart';
 
-import 'package:money_manager/widgets/day_transaction.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

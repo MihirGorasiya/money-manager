@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:money_manager/constants/get_controller.dart';
 import 'package:money_manager/pages/home_page.dart';
 
 void main() {

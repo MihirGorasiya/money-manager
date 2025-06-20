@@ -1,10 +1,8 @@
 // ignore_for_file: depend_on_referenced_packages
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:money_manager/utils/expense.dart';
 import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DatabaseManager {

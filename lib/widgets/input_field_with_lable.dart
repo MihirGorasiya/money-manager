@@ -24,7 +24,7 @@ class InputFieldWithLable extends StatelessWidget {
         children: [
           Text(
             lable,
-            style: TextStyle(color: AppConstants.greyText),
+            style: const TextStyle(color: AppConstants.greyText),
           ),
           Expanded(
             child: Container(
